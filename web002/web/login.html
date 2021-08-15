@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网站的登录</title>
+    <script src="layui-v2.5.6/layui/layui.js"></script>
+    <link rel="stylesheet" href="layui-v2.5.6/layui/css/layui.css">
+
+</head>
+<body>
+<!--为何要用HTML，以后开发不用jsp了-->
+    <div>
+        <form action="" class="layui-form" layui-filter="testform" onsubmit="return false">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="username" required lay-verify="required" placeholder="请输入账户" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="userpassword" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="code" class="layui-input">
+                    <img id="imgid" src="/CodeServlet" style="width: 70px;height: 30px">
+                    <button onclick="refresh()">看不清？点击更换验证码</button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formLogin">登录</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+<script>
+    layui.use(['form','jquery','layer'],function () {
+        var form = layui.form;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        form.on('submit(formLogin)', function (data) {
+            console.log(data.field)
+    //点击后发送ajax给后台
+            $.ajax({
+               url:'/LoginServlet',
+                type:'POST',
+                data:data.field,
+                success:function (res) {
+                    console.log(res)
+                    if (res.code==400){
+                        layer.msg(res.msg)
+                    }
+                    if (res.code==4001){
+                        layer.msg(res.msg)
+                    }
+                    if (res.code==0){
+                        //需要跳转到后台界面，页面跳转由前端负责，单体项目，页面跳转由后端负责
+                        window.location.href="/home.html"
+                    }
+                },
+                dataType:'json'
+            });
+        });
+    });
+
+    function refresh(){
+        document.getElementById("imgid").src="/CodeServlet?time="+new Date().getTime();
+    }
+</script>
+
+</body>
+</html>
